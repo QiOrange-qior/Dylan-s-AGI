@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGI·智造未来 - Dylan Chang | Apple-Class Redesign</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Apple-Class Design System --- */
+        :root {
+            --background: 0 0% 100%; --foreground: 0 0% 9%; --muted: 0 0% 96.5%; --muted-foreground: 0 0% 45.1%; --accent: 211 100% 50%; --accent-foreground: 0 0% 100%; --border: 0 0% 91%; --ring: 211 100% 50%;
+            --brand-pink: 330 84% 67%; --brand-purple: 270 95% 75%; --brand-blue: 217 91% 60%;
+            --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+            --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1); --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+            --navbar-height: 64px;
+        }
+        .dark {
+            --background: 0 0% 8%; --foreground: 0 0% 95%; --muted: 0 0% 12%; --muted-foreground: 0 0% 70%; --accent: 211 100% 65%; --border: 0 0% 20%;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: hsl(var(--background)); color: hsl(var(--foreground)); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; position: relative; overflow-x: hidden;
+        }
+        .text-apple-display { font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+        .text-apple-headline { font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+        .text-apple-body { font-size: clamp(1rem, 2vw, 1.125rem); font-weight: 400; line-height: 1.7; }
+        .text-apple-caption { font-size: clamp(0.75rem, 1.5vw, 0.875rem); font-weight: 400; line-height: 1.4; color: hsl(var(--muted-foreground)); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-lg); }
+        .section { padding: var(--space-2xl) 0; position: relative; scroll-margin-top: calc(var(--navbar-height) + 16px); }
+        .section-grid { display: grid; gap: var(--space-lg); grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+        @media (max-width: 768px) { .container { padding: 0 var(--space-md); } .section { padding: var(--space-xl) 0; } }
+        
+        .project-card-container { position: relative; height: 100%; transition: all 0.3s var(--ease-out); }
+        .glass-card { 
+            background-color: hsl(var(--background)); border: 1px solid hsl(var(--border)); 
+            box-shadow: 0 2px 4px hsla(var(--foreground) / 0.04), 0 8px 24px hsla(var(--foreground) / 0.08); 
+            border-radius: 20px; transition: all 0.3s var(--ease-in-out); z-index: 2; 
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+            height: 100%; 
+            will-change: transform, box-shadow;
+        }
+        .project-card-container:hover .glass-card { 
+            transform: translateY(-6px) scale(1.01); 
+            box-shadow: 0 4px 8px hsla(var(--foreground) / 0.06), 0 12px 32px hsla(var(--foreground) / 0.1); 
+        }
+        .dark .glass-card { background-color: hsl(var(--muted)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 4px hsla(0,0%,0%,0.1), 0 8px 24px hsla(0,0%,0%,0.2); }
+        
+        @keyframes apple-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { opacity: 0; animation: apple-fade-in 0.6s var(--ease-out) forwards; will-change: transform, opacity; }
+        
+        .background-gradient { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+        .background-gradient::before, .background-gradient::after { content: ''; position: absolute; width: 800px; height: 800px; background-image: radial-gradient(circle, hsla(var(--brand-purple), 0.15), transparent 70%); border-radius: 50%; filter: blur(100px); opacity: 0.6; animation: move-gradient-1 25s infinite alternate ease-in-out; will-change: transform; }
+        .dark .background-gradient::before, .dark .background-gradient::after { opacity: 0.3; }
+        .background-gradient::after { animation-name: move-gradient-2; animation-duration: 30s; background-image: radial-gradient(circle, hsla(var(--brand-blue), 0.1), transparent 70%); }
+        @keyframes move-gradient-1 { to { transform: translate(100px, 150px) rotate(30deg); } }
+        @keyframes move-gradient-2 { to { transform: translate(-150px, -100px) rotate(-45deg); } }
+        .hero-background-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3e%3cdefs%3e%3clinearGradient id='a' x1='50%25' x2='50%25' y1='0%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%23E5E7EB'/%3e%3cstop offset='100%25' stop-color='%23F9FAFB'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath fill='url(%23a)' d='M0 0h1600v900H0z'/%3e%3cpath fill='%23D1D5DB' fill-opacity='.1' d='M-100 0h1800v900H-100z'/%3e%3cpath fill-opacity='.15' fill='hsl(211, 100%25, 50%25)' d='M1006 205c-154 68-385 177-513 114s-219-197-393-182-313 128-256 280 234 278 480 234 429-162 559-222 249-146 194-282-140-162-265-171-242 41-306 129z'/%3e%3cpath fill-opacity='.1' fill='hsl(211, 100%25, 60%25)' d='M1118 412c-154 68-385 177-513 114s-219-197-393-182-313 128-256 280 234 278 480 234 429-162 559-222 249-146 194-282-140-162-265-171-242 41-306 129z'/%3e%3c/svg%3e"); background-size: cover; background-position: center; opacity: 0.5; mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%); animation: subtle-pan 20s infinite alternate ease-in-out; will-change: transform; }
+        .dark .hero-background-image { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3e%3cdefs%3e%3clinearGradient id='a' x1='50%25' x2='50%25' y1='0%25' y2='100%25'%3e%3cstop offset='0%25' stop-color='%23111827'/%3e%3cstop offset='100%25' stop-color='%23000'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath fill='url(%23a)' d='M0 0h1600v900H0z'/%3e%3cpath fill='%23E5E7EB' fill-opacity='.03' d='M-100 0h1800v900H-100z'/%3e%3cpath fill-opacity='.1' fill='hsl(211, 100%25, 65%25)' d='M1006 205c-154 68-385 177-513 114s-219-197-393-182-313 128-256 280 234 278 480 234 429-162 559-222 249-146 194-282-140-162-265-171-242 41-306 129z'/%3e%3cpath fill-opacity='.05' fill='hsl(211, 100%25, 75%25)' d='M1118 412c-154 68-385 177-513 114s-219-197-393-182-313 128-256 280 234 278 480 234 429-162 559-222 249-146 194-282-140-162-265-171-242 41-306 129z'/%3e%3c/svg%3e"); }
+        @keyframes subtle-pan { from { transform: scale(1) translateX(0); } to { transform: scale(1.05) translateX(-20px); } }
+        main { z-index: 1; position: relative; }
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: hsla(var(--background) / 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid hsl(var(--border)); }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; height: var(--navbar-height); }
+        .logo { font-weight: 500; font-size: 1.5rem; color: hsl(var(--foreground)); }
+        .nav-links { display: flex; gap: var(--space-lg); list-style: none; }
+        .nav-link { text-decoration: none; color: hsl(var(--muted-foreground)); font-weight: 500; transition: color 0.2s ease; }
+        .nav-link:hover { color: hsl(var(--accent)); }
+        @media (max-width: 768px) { .nav-links { display: none; } }
+        .section-alt-bg { background-color: hsl(var(--muted)); }
+        .hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-top: 80px; padding-bottom: 40px; text-align: center; }
+        .hero-content { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); }
+        .hero-handle { color: hsl(var(--muted-foreground)); font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 500; letter-spacing: 0.05em; margin-top: -8px; }
+        .hero-subtitle { color: hsl(var(--muted-foreground)); max-width: 600px; margin: 0 auto; }
+        .hero-buttons { margin-top: var(--space-lg); display: flex; gap: var(--space-md); }
+        .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 24px; border-radius: 99px; font-size: 1rem; font-weight: 500; text-decoration: none; border: 1px solid transparent; transition: all 0.2s var(--ease-out); height: 48px; line-height: 1; will-change: transform, box-shadow; }
+        .button svg { width: 1em; height: 1em; }
+        .button-primary { background: linear-gradient(90deg, hsl(var(--brand-blue)), hsl(var(--brand-purple))); color: hsl(var(--accent-foreground)); box-shadow: 0 4px 12px hsla(var(--brand-blue) / 0.3); }
+        .button-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px hsla(var(--brand-purple) / 0.4); }
+        .button-secondary { background-color: hsl(var(--background)); color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); box-shadow: 0 1px 2px hsla(var(--foreground) / 0.05); }
+        .button-secondary:hover { background: linear-gradient(90deg, hsl(var(--brand-blue)), hsl(var(--brand-purple))); color: hsl(var(--accent-foreground)); border-color: transparent; transform: translateY(-2px); box-shadow: 0 6px 16px hsla(var(--brand-purple) / 0.4); }
+        .avatar-container { width: 180px; height: 180px; position: relative; margin: var(--space-xl) auto; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
+        @keyframes rotate-3d { 0% { transform: rotateY(0deg) rotateX(5deg); } 100% { transform: rotateY(360deg) rotateX(5deg); } }
+        .avatar-3d-hero { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; animation: rotate-3d 15s linear infinite; will-change: transform; }
+        .avatar-frame-hero { position: absolute; width: 100%; height: 100%; border: 1px solid hsla(var(--accent) / 0.3); border-radius: 50%; }
+        .avatar-core-hero { width: 160px; height: 160px; border-radius: 50%; z-index: 5; overflow: hidden; position: absolute; transform: translateZ(-30px); border: 4px solid hsl(var(--background)); box-shadow: 0 0 0 1px hsl(var(--border)); }
+        .avatar-core-hero img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes energy-pulse { 50% { transform: scale(1.1); opacity: 0.5; } }
+        .energy-ring { position: absolute; border-radius: 50%; border: 1px solid; opacity: 0.2; animation: energy-pulse 6s ease-in-out infinite alternate; will-change: transform, opacity; }
+        .section-header { text-align: center; margin-bottom: var(--space-2xl); max-width: 700px; margin-left: auto; margin-right: auto; }
+        .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-sm); }
+        .card-description { color: hsl(var(--muted-foreground)); line-height: 1.6; }
+        .project-image { width: 100%; padding-top: 56.25%; background-color: hsl(var(--muted)); border-radius: 12px; position: relative; overflow: hidden; }
+        .project-image img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease-in-out); will-change: transform; }
+        .project-card-container:hover .project-image img { transform: scale(1.05); }
+        .project-image .game-image { object-position: top; }
+        .card-content { padding: var(--space-xl); display: flex; flex-direction: column; flex-grow: 1; }
+        .tags-container { margin-top: auto; padding-top: var(--space-md); display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+        .apple-tag { display: inline-block; font-size: 0.8rem; font-weight: 500; padding: var(--space-xs) 12px; border-radius: 99px; }
+        .apple-tag.blue { background-color: hsla(var(--brand-blue) / 0.1); color: hsl(var(--brand-blue)); border: 1px solid hsla(var(--brand-blue) / 0.2); }
+        .apple-tag.purple { background-color: hsla(var(--brand-purple) / 0.1); color: hsl(var(--brand-purple)); border: 1px solid hsla(var(--brand-purple) / 0.2); }
+        .apple-tag.pink { background-color: hsla(var(--brand-pink) / 0.1); color: hsl(var(--brand-pink)); border: 1px solid hsla(var(--brand-pink) / 0.2); }
+        .dark .apple-tag { border-color: transparent; }
+        .project-link-iris { text-decoration:none; position: absolute; top: var(--space-md); right: var(--space-md); width: 40px; height: 40px; border-radius: 50%; background: hsla(var(--background) / 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid hsla(var(--foreground) / 0.1); display: flex; align-items: center; justify-content: center; color: hsl(var(--foreground)); font-size: 1.5rem; transform: scale(0.8); opacity: 0; transition: all 0.3s var(--ease-out); will-change: transform, opacity; z-index: 3; }
+        .project-card-container:hover .project-link-iris { transform: scale(1); opacity: 1; }
+        .dark .project-link-iris { background: hsla(var(--muted) / 0.7); }
+        .filter-buttons { display: flex; justify-content: center; gap: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+        .filter-btn { background-color: hsl(var(--muted)); color: hsl(var(--muted-foreground)); border: 1px solid hsl(var(--border)); padding: 8px 16px; border-radius: 99px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease-out; }
+        .filter-btn.active { background-color: hsl(var(--accent)); color: hsl(var(--accent-foreground)); border-color: hsl(var(--accent)); }
+        .dark .filter-btn { background-color: hsl(var(--muted)); border-color: hsl(var(--border)); }
+        .dark .filter-btn.active { background-color: hsl(var(--accent)); border-color: hsl(var(--accent)); }
+        .footer { border-top: 1px solid hsl(var(--border)); padding: var(--space-2xl) 0; text-align: center; }
+        .social-links { display: flex; justify-content: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .social-link { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background-color: hsl(var(--muted)); border: 1px solid hsl(var(--border)); border-radius: 50%; color: hsl(var(--muted-foreground)); text-decoration: none; transition: all 0.2s var(--ease-out); will-change: transform, background-color; }
+        .social-link:hover { background-color: hsl(var(--accent)); color: hsl(var(--accent-foreground)); border-color: hsl(var(--accent)); transform: translateY(-2px); }
+        .social-link svg { width: 24px; height: 24px; }
+        .maimai-icon { font-size: 1.2rem; font-weight: 600; line-height: 1; }
+        .theme-toggle-btn { background-color: hsl(var(--muted)); border: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease-out; position: relative; overflow: hidden; }
+        .theme-toggle-btn:hover { background-color: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+        .theme-toggle-btn svg { position: absolute; transition: transform 0.3s ease-out, opacity 0.3s ease-out; }
+        .theme-toggle-btn .sun-icon { transform: scale(1) rotate(0deg); opacity: 1; }
+        .theme-toggle-btn .moon-icon { transform: scale(0) rotate(-90deg); opacity: 0; }
+        .dark .theme-toggle-btn .sun-icon { transform: scale(0) rotate(90deg); opacity: 0; }
+        .dark .theme-toggle-btn .moon-icon { transform: scale(1) rotate(0deg); opacity: 1; }
+    </style>
+</head>
+<body>
+    
+    <div class="background-gradient"></div>
+
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo" style="display: flex; align-items: center; gap: 12px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="nebulaGradient" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#F472B6"/><stop offset="0.5" stop-color="#C084FC"/><stop offset="1" stop-color="#60A5FA"/></linearGradient></defs>
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="url(#nebulaGradient)" stroke-width="2" stroke-opacity="0.6"/>
+                    <circle cx="8" cy="8" r="2.5" fill="#60A5FA"/><circle cx="16.5" cy="9.5" r="3" fill="#C084FC"/><circle cx="13.5" cy="16.5" r="2" fill="#F472B6"/>
+                </svg>
+                <span>AGI·智造未来</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-lg);">
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link">首页</a></li><li><a href="#skills" class="nav-link">技能</a></li><li><a href="#projects" class="nav-link">项目</a></li><li><a href="#contact" class="nav-link">联系</a></li>
+                </ul>
+                <button id="theme-toggle" class="theme-toggle-btn" title="切换主题">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707z"/></svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero-section" id="home">
+            <div class="hero-background-image"></div>
+            <div class="container hero-content animate-in">
+                <div class="avatar-container">
+                    <div class="avatar-3d-hero"><div class="avatar-frame-hero"></div><div class="avatar-frame-hero"></div><div class="avatar-frame-hero"></div></div>
+                    <div class="avatar-core-hero"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6kbmaFMcozr9zCTdt8vSnuRKk9_zAg2uF8nXIbJQT68PC1OMivAjaLyhXWcQbk4ncejF0y1afvN_6SxQ0V0JgMRDxyalvD5F3jlLPxFjOBDmM57fE1QpnQqNTRqznMU0JPq3Z73uHk8JDD4iQdtctogiK3DFF8Lh-6qensOI-iu_9YjMbRtlcMHbCX9yR_GixleMlWW4zsq5Us5OkG3YVOlLETwgFLumH4C0-wvqHUSNvqXtdAtXbuRL-p6E7uww_GfYrbjT07pA" alt="Dylan Chang"/></div>
+                    <div class="energy-ring energy-ring-0"></div><div class="energy-ring energy-ring-1"></div><div class="energy-ring energy-ring-2"></div><div class="energy-ring energy-ring-3"></div>
+                </div>
+                <h1 class="text-apple-display">为 AI，注入一抹亮橙</h1>
+                <p class="hero-handle">气橙 (QiOrange)｜@qior</p>
+                <p class="text-apple-body hero-subtitle">作为一名高级AI产品经理，我热衷于探索AGI前沿，将复杂技术转化为直观易用的产品。在这里，我用最明白的方式 (少术语，多明白)，分享AI学习、表达创作与斜杠生活的乐趣。</p>
+                <div class="tags-container"><span class="apple-tag blue">AIGC</span><span class="apple-tag purple">Product Strategy</span><span class="apple-tag pink">AI Agents</span><span class="apple-tag blue">Prompt Engineering</span></div>
+                <div class="hero-buttons">
+                    <a href="#skills" class="button button-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/></svg><span>技能与成果</span></a>
+                    <a href="#projects" class="button button-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.868.046C7.534.018 6.27.323 5.244 1.152.88 3.322.68 7.378 2.59 9.82c1.405 1.779 4.234 2.427 6.377 1.497.352-.162.69-.353 1.01-.568l1.456 1.456c.146.146.34.22.53.22s.384-.074.53-.22c.293-.293.293-.767 0-1.06l-1.456-1.456c.215-.32.406-.658.568-1.01 1.01-2.223.32-5.02-1.498-6.377C9.677.323 8.413.018 7.132.046L8.868.046zM6.353 3.147a.5.5 0 0 1 .707 0l2 2a.5.5 0 0 1 0 .707l-2 2a.5.5 0 0 1-.707-.707L7.793 5.5 6.353 4.06a.5.5 0 0 1 0-.707z"/></svg><span>精选项目</span></a>
+                </div>
+            </div>
+        </section>
+        <section class="section section-alt-bg" id="skills">
+            <div class="container">
+                <div class="section-header animate-in"><h2 class="text-apple-headline">技能与成果矩阵</h2><p class="text-apple-body" style="color: hsl(var(--muted-foreground)); margin-top: var(--space-md);">基于 AI 战略规划、产品迭代与跨部门协同的系统能力，覆盖从洞察、设计到落地的完整链路。</p></div>
+                <div class="section-grid">
+                    <div class="project-card-container animate-in" style="animation-delay: 0.1s;"><div class="glass-card"><div class="card-content"><h3 class="card-title">核心能力体系</h3><p class="card-description"><strong>AI产品设计:</strong> 专家级，精通从 0 到 1 的产品构建。<br><strong>产品管理经验:</strong> 超过8年，覆盖ToB与ToC全栈场景。<br><strong>技术背景:</strong> 深入理解大模型、Agents工作流与数据中台。</p></div></div></div>
+                    <div class="project-card-container animate-in" style="animation-delay: 0.2s;"><div class="glass-card"><div class="card-content"><h3 class="card-title">专业认证</h3><p class="card-description">融合国际产品管理体系 (PMP, NPDP) 与前沿 AI 实践方法论 (阿里云AI训练师)。</p><div class="tags-container"><span class="apple-tag blue">PMP</span><span class="apple-tag purple">NPDP</span><span class="apple-tag pink">AI训练师</span></div></div></div></div>
+                    <div class="project-card-container animate-in" style="animation-delay: 0.3s;"><div class="glass-card"><div class="card-content"><h3 class="card-title">技术栈</h3><p class="card-description">熟练运用前沿 AI 模型与工具，构建高效、智能的解决方案。</p><div class="tags-container"><span class="apple-tag blue">Gemini & GPT-4</span><span class="apple-tag purple">Stable Diffusion</span><span class="apple-tag pink">Coze & n8n</span><span class="apple-tag blue">SQL & QuickBI</span><span class="apple-tag purple">Prompt工程</span></div></div></div></div>
+                </div>
+            </div>
+        </section>
+        <section class="section" id="projects">
+            <div class="container">
+                <div class="section-header animate-in">
+                    <h2 class="text-apple-headline">精选项目案例</h2>
+                    <p class="text-apple-body" style="color: hsl(var(--muted-foreground)); margin-top: var(--space-md);">通过实际项目驱动业务增长，探索 AI 技术的商业化落地。</p>
+                </div>
+                <div class="filter-buttons animate-in">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="aigc">AIGC 产品</button>
+                    <button class="filter-btn" data-filter="game">AI 游戏创新</button>
+                    <button class="filter-btn" data-filter="automation">数据与自动化</button>
+                </div>
+                <div class="section-grid">
+                    <div class="project-card-container animate-in" data-category="aigc"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/868ac36d-36a9-464a-bb7a-faa29ea72043" alt="造境 · Creascape"></div><div class="card-content"><h3 class="card-title">造境 · Creascape</h3><p class="card-description">一款集 AI 视频生成与智能分析于一体的 Web 应用，让用户既能轻松创造视觉内容，又能深度解析视频数据。</p><div class="tags-container"><span class="apple-tag blue">AIGC</span><span class="apple-tag purple">文生视频</span><span class="apple-tag pink">视频分析</span><span class="apple-tag blue">多模态AI</span></div></div><a href="https://ai.studio/apps/drive/1AVAIoF1vB22UzjsKL5Mf-krn7694xbEf" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="aigc"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/1298d078-4fc4-41ee-acae-28772c797415" alt="光影魔方·PixelShift"></div><div class="card-content"><h3 class="card-title">光影魔方·PixelShift</h3><p class="card-description">基于 Gemini 2.5 的 "配方驱动" AI 创意工具，将复杂 AI 能力转化为大众可用产品，降低 95% 使用门槛。</p><div class="tags-container"><span class="apple-tag blue">Gemini 2.5</span><span class="apple-tag purple">配方驱动</span><span class="apple-tag pink">零门槛AI</span></div></div><a href="https://ai.studio/apps/drive/1nRncmppp0UFmfnNZOXaoHPgv_9cWIa4s" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="aigc"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/8f44110c-29ab-4fb1-aac5-606088b7da16" alt="AI创意素材营销平台"></div><div class="card-content"><h3 class="card-title">AI创意素材营销平台</h3><p class="card-description">基于 Stable Diffusion 构建，覆盖营销全链路，实现素材产出效率提升 12 倍，海报 CTR 提升 40%。</p><div class="tags-container"><span class="apple-tag purple">Stable Diffusion</span><span class="apple-tag pink">效率提升12倍</span><span class="apple-tag blue">CTR提升40%</span></div></div><a href="https://youware.app/project/o893w5itbn?enter_from=share" target="_blank" class="project-link-iris">↗️</a></div></div>
+                    <div class="project-card-container animate-in" data-category="automation"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/c78421c1-8a9f-481b-870f-4593aca6665b" alt="AI智慧营运"></div><div class="card-content"><h3 class="card-title">AI智慧营运</h3><p class="card-description">基于LangGraph多智能体框架，为外销员工打造的AI智慧差旅助手，释放行政人力1200小时/月。</p><div class="tags-container"><span class="apple-tag pink">LangGraph</span><span class="apple-tag blue">多智能体</span><span class="apple-tag purple">智能审批</span><span class="apple-tag pink">成本节约</span></div></div><a href="https://g.co/gemini/share/720544c79d29" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="game"><div class="glass-card"><div class="project-image"><img class="game-image" src="https://github.com/user-attachments/assets/9916ab3c-9299-42b7-aded-cedbe8f26d66" alt="战神GDD教学平台"></div><div class="card-content"><h3 class="card-title">交互式GDD教学演示平台</h3><p class="card-description">以《战神4》为实战案例，系统化呈现从理论框架到实际应用的完整游戏设计文档(GDD)编写方法论。</p><div class="tags-container"><span class="apple-tag blue">游戏设计</span><span class="apple-tag purple">内容创作</span><span class="apple-tag pink">知识管理</span></div></div><a href="https://ilef1s6bo2.space.minimax.io" target="_blank" class="project-link-iris">↗️</a></div></div>
+                    <div class="project-card-container animate-in" data-category="game"><div class="glass-card"><div class="project-image"><img class="game-image" src="https://github.com/user-attachments/assets/5a5ee609-2f71-473e-a466-348d34a56459" alt="历史的回廊"></div><div class="card-content"><h3 class="card-title">📜 历史的回廊：亡者之书</h3><p class="card-description">探索 "AI 主持人" 模式的创新 RPG，实现 "反转角色" 与 "世代传承" 机制，创建动态个性化游戏体验。</p><div class="tags-container"><span class="apple-tag blue">AI主持人</span><span class="apple-tag purple">反转角色</span><span class="apple-tag pink">多模态游戏</span></div></div><a href="https://g.co/gemini/share/28110e409d10" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="game"><div class="glass-card"><div class="project-image"><img class="game-image" src="https://github.com/user-attachments/assets/79edbcd4-f748-4f02-a790-ad5f94135e27" alt="巢穴的守护者"></div><div class="card-content"><h3 class="card-title">🐲 巢穴的守护者：英雄必须死</h3><p class="card-description">创新"反转角色"AI游戏体验，玩家体验BOSS视角守护巢穴，融合塔防经营元素，探索AI主持人模式下的策略游戏新范式。</p><div class="tags-container"><span class="apple-tag purple">反转角色</span><span class="apple-tag pink">塔防经营</span><span class="apple-tag blue">BOSS体验</span></div></div><a href="https://g.co/gemini/share/85ab351bc237" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="game"><div class="glass-card"><div class="project-image"><img class="game-image" src="https://github.com/user-attachments/assets/a409c647-82e7-4008-9fb1-b2e0cbbaa041" alt="世代的遗志"></div><div class="card-content"><h3 class="card-title">🏰 世代的遗志：百年诅咒</h3><p class="card-description">创新"世代传承"机制的AI RPG，玩家体验血脉记忆传承，构建跨越百年的家族史诗，探索AI驱动的情感延续和记忆系统。</p><div class="tags-container"><span class="apple-tag pink">世代传承</span><span class="apple-tag blue">血脉记忆</span><span class="apple-tag purple">家族史诗</span></div></div><a href="https://g.co/gemini/share/0e4b9ce6e65c" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="automation"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/5d778f4a-9880-4eb7-9ad5-691f510fdd3d" alt="LTV分析平台"></div><div class="card-content"><h3 class="card-title">社区娱乐行业LTV分析平台</h3><p class="card-description">融合三维价值计算、机器学习预测(87%准确率)、RFM用户分群与渠道归因模型。实现投放ROI提升18.5%、年节省成本120万元。</p><div class="tags-container"><span class="apple-tag blue">数据产品</span><span class="apple-tag purple">增长分析</span><span class="apple-tag pink">预测模型</span><span class="apple-tag blue">A/B测试</span></div></div><a href="https://zrwkyi5lfoen.space.minimax.io" target="_blank" class="project-link-iris" title="需要科学上网">🌍</a></div></div>
+                    <div class="project-card-container animate-in" data-category="automation"><div class="glass-card"><div class="project-image"><img src="https://github.com/user-attachments/assets/f23f64cd-3915-4b08-b185-ba8f2743e1c6" alt="AI Agents自动化获客系统"></div><div class="card-content"><h3 class="card-title">AI Agents自动化获客系统</h3><p class="card-description">构建 20+ 智能体工作流，实现全流程 AI 化，获客成本降低 80%，CVR 提升 40%，年节省人工 20000h。</p><div class="tags-container"><span class="apple-tag pink">20+智能体</span><span class="apple-tag blue">成本降低80%</span><span class="apple-tag purple">CVR+40%</span></div></div><a href="#" target="_blank" class="project-link-iris">↗️</a></div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer" id="contact">
+        <div class="container animate-in">
+            <h2 class="text-apple-headline" style="margin-bottom: var(--space-md);">建立连接</h2>
+            <div class="social-links">
+                <a href="https://github.com/QiOrange-qior" class="social-link" title="GitHub" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+                <a href="https://maimai.cn/contact/share/card?u=aeh6rwibwzz0&_share_channel=copy_link" class="social-link" title="脉脉" target="_blank" rel="noopener noreferrer"><span class="maimai-icon">脉</span></a>
+            </div>
+            <p class="text-apple-caption" style="margin-top: var(--space-lg);">© 2025 Dylan Chang. 用AI创造无限可能 | dylan.chang@aipm.pro</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card-container');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filter = this.getAttribute('data-filter');
+
+                    projectCards.forEach(card => {
+                        const cardCategory = card.getAttribute('data-category');
+                        
+                        // Start fade out animation
+                        card.style.transform = 'scale(0.95)';
+                        card.style.opacity = '0';
+                        card.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+                        
+                        setTimeout(() => {
+                            if (filter === 'all' || cardCategory === filter) {
+                                card.style.display = 'block';
+                                setTimeout(() => { // Start fade in animation
+                                    card.style.transform = 'scale(1)';
+                                    card.style.opacity = '1';
+                                }, 10);
+                            } else {
+                               card.style.display = 'none';
+                           }
+                        }, 200);
+                    });
+                });
+            });
+
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const applyTheme = (theme) => {
+                body.classList.remove('dark', 'light');
+                body.classList.add(theme);
+            };
+            let savedTheme = localStorage.getItem('theme');
+            if (!savedTheme) {
+                savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            applyTheme(savedTheme);
+            themeToggle.addEventListener('click', () => {
+                const newTheme = body.classList.contains('dark') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        });
+    </script>
+</body>
+</html>
+
